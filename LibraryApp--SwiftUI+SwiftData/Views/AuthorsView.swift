@@ -5,6 +5,7 @@ struct AuthorsView: View {
     @Environment(\.modelContext) private var context
     @Query(sort: \Author.name) private var authors: [Author]
     @State private var showingAddAuthor = false
+    @State private var sortOrder = SortDescriptor(\Author.name)
     
     var body: some View {
         NavigationStack {
@@ -16,40 +17,34 @@ struct AuthorsView: View {
                         description: Text("Add your first author to get started")
                     )
                 } else {
-                    List {
-                        ForEach(authors) { author in
-                            NavigationLink(destination: AuthorDetailView(author: author)) {
-                                VStack(alignment: .leading) {
-                                    Text(author.name)
-                                        .font(.headline)
-                                    Text("\(author.books.count) book\(author.books.count == 1 ? "" : "s")")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-                        }
-                        .onDelete(perform: deleteAuthors)
-                    }
+                    AuthorListView(sort: sortOrder)
                 }
             }
             .navigationTitle("Authors")
             .toolbar {
-                Button {
-                    showingAddAuthor = true
-                } label: {
-                    Image(systemName: "plus")
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    Menu {
+                        Picker("Sort", selection: $sortOrder) {
+                            Text("Name")
+                                .tag(SortDescriptor(\Author.name))
+                            Text("Books Count")
+                                .tag(SortDescriptor(\Author.cachedBooksCount, order: .reverse))
+                            Text("Birth Date")
+                                .tag(SortDescriptor(\Author.birthDate))
+                        }
+                    } label: {
+                        Image(systemName: "arrow.up.arrow.down")
+                    }
+                    Button {
+                        showingAddAuthor = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
                 }
             }
             .sheet(isPresented: $showingAddAuthor) {
                 AddAuthorView()
             }
         }
-    }
-    
-    private func deleteAuthors(offsets: IndexSet) {
-        for index in offsets {
-            context.delete(authors[index])
-        }
-        try? context.save()
     }
 }

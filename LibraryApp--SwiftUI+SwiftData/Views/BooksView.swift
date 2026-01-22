@@ -61,7 +61,12 @@ struct BooksView: View {
     
     private func deleteBooks(offsets: IndexSet) {
         for index in offsets {
-            context.delete(books[index])
+            let book = books[index]
+            
+            if let author = book.author {
+                author.updateBooksCount()
+            }
+            context.delete(book)
         }
         try? context.save()
     }

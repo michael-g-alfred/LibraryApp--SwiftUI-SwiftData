@@ -5,6 +5,18 @@ struct BookDetailView: View {
     
     var body: some View {
         List {
+            Section {
+                HStack {
+                    Spacer()
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color(hex: book.coverColor))
+                        .frame(width: 120, height: 180)
+                        .shadow(radius: 5)
+                    Spacer()
+                }
+                .listRowBackground(Color.clear)
+            }
+            
             Section("Information") {
                 LabeledContent("Title", value: book.title)
                 LabeledContent("ISBN", value: book.isbn)

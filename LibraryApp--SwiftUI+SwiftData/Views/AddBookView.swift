@@ -91,6 +91,7 @@ struct AddBookView: View {
                         book.categories = Array(selectedCategories)
                         
                         context.insert(book)
+                        author.updateBooksCount()
                         try? context.save()
                         dismiss()
                     }
